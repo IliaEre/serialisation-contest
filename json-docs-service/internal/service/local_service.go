@@ -67,6 +67,9 @@ func NewReportService() *ReportService {
 
 func (sv ReportService) Save(doc model.Document) {
 	Docs = append(Docs, doc)
+	if len(Docs) > 1000 {
+		Docs = Docs[:500] // delete first 500
+	}
 }
 
 func (sv ReportService) Find(limit int, offset int) []model.Document {

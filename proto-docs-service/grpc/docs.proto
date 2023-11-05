@@ -1,19 +1,18 @@
 syntax = "proto3";
 
-package docs;
-option go_package = "proto-docs-service/docs";
+option go_package = "/docs";
 
 service DocumentService {
-    rpc GetAllByLimitAndOffset(GetAllByLimitAndOffsetRequest) returns (GetAllByLimitAndOffsetResponse) {}
+    rpc GetAllByLimitAndOffset(GetAllRequest) returns (GetAllResponse) {}
     rpc Save(SaveRequest) returns (SaveResponse) {}
 }
 
-message GetAllByLimitAndOffsetRequest {
+message GetAllRequest {
     int32 limit = 1;
     int32 offset = 2;
 }
 
-message GetAllByLimitAndOffsetResponse {
+message GetAllResponse {
     repeated Document documents = 1;
 }
 
