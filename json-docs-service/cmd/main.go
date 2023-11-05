@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	ginprometheus "github.com/zsais/go-gin-prometheus"
 	"json-docs-service/internal/service"
 	"json-docs-service/pkg/middle"
 	"net/http"
@@ -20,6 +21,8 @@ const (
 
 func main() {
 	router := gin.Default()
+	p := ginprometheus.NewPrometheus("gin")
+	p.Use(router)
 	sv := service.NewReportService()
 	gw := middle.NewHttpGateway(*sv)
 
