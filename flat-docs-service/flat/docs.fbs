@@ -1,6 +1,23 @@
 // Example docs schema
 
-namespace Docs.Sample;
+namespace docs.sample;
+
+table SaveRequest {
+    docs: [Document];
+}
+
+table SaveResponse {
+    message: string;
+}
+
+table FindRequest {
+    limit: int32;
+    offset: int32;
+}
+
+table FindResponse {
+    docs: [Document];
+}
 
 table Department {
   code: string;
