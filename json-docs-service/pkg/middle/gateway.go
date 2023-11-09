@@ -37,12 +37,11 @@ func (h HttpGateway) Find(c *gin.Context) {
 }
 
 func (h HttpGateway) Save(c *gin.Context) {
-	var reports model.Document
-
-	if err := c.BindJSON(&reports); err != nil {
+	var document model.Document
+	if err := c.BindJSON(&document); err != nil {
 		return
 	}
 
-	h.reportService.Save(reports)
+	h.reportService.Save(document)
 	c.IndentedJSON(http.StatusCreated, gin.H{"status": "ok"})
 }

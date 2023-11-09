@@ -1,9 +1,11 @@
 package service
 
 import (
+	"bufio"
 	"flat--docs-service/flat/docs/sample"
 	flatbuffers "github.com/google/flatbuffers/go"
 	"github.com/stretchr/testify/assert"
+	"os"
 	"testing"
 )
 
@@ -11,6 +13,69 @@ const (
 	BenchCall  = 100_000
 	bufferSize = 1024
 )
+
+func TestFind(t *testing.T) {
+	builder := flatbuffers.NewBuilder(bufferSize)
+	sample.FindRequestStart(builder)
+	sample.FindRequestAddLimit(builder, 10)
+	sample.FindRequestAddOffset(builder, 0)
+	response := sample.FindRequestEnd(builder)
+	builder.Finish(response)
+	bytes := builder.FinishedBytes()
+
+	f, err := os.Create("request.binary")
+	check(err)
+	defer f.Close()
+
+	w := bufio.NewWriter(f)
+	_, err = w.Write(bytes)
+	check(err)
+	w.Flush()
+}
+
+func TestCreateDoc(t *testing.T) {
+	builder := flatbuffers.NewBuilder(bufferSize)
+
+	// build internal objects
+	employee := buildEmployee(builder)
+	department := buildDepartment(builder, employee)
+	prices := buildPrices(builder)
+	owner := buildOwner(builder)
+	transaction := buildTransaction(builder)
+	data := buildDate(builder, transaction)
+	address := buildAddress(builder)
+	delivery := buildDelivery(builder, address)
+	goods := buildGoods(builder)
+
+	sample.DocumentStartGoodsVector(builder, 1)
+	builder.PrependUOffsetT(goods)
+	goodsVector := builder.EndVector(1)
+
+	// fill doc's name:
+	documentCode := builder.CreateString("IT")
+	// build doc
+	sample.DocumentStart(builder)
+	sample.DocumentAddName(builder, documentCode)
+	sample.DocumentAddDepartment(builder, department)
+	sample.DocumentAddPrice(builder, prices)
+	sample.DocumentAddOwner(builder, owner)
+	sample.DocumentAddData(builder, data)
+	sample.DocumentAddDelivery(builder, delivery)
+	sample.DocumentAddGoods(builder, goodsVector)
+
+	docs := sample.DocumentEnd(builder)
+	builder.Finish(docs)
+	buf := builder.FinishedBytes()
+
+	f, err := os.Create("save_request.binary")
+	check(err)
+	defer f.Close()
+
+	w := bufio.NewWriter(f)
+	_, err = w.Write(buf)
+	check(err)
+	w.Flush()
+}
 
 func BenchmarkCreate(b *testing.B) {
 	b.N = BenchCall
@@ -165,4 +230,10 @@ func buildGoods(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
 	sample.GoodsAddCode(builder, code)
 	goods := sample.GoodsEnd(builder)
 	return goods
+}
+
+func check(e error) {
+	if e != nil {
+		panic(e)
+	}
 }

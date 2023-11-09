@@ -5,6 +5,6 @@ import (
 )
 
 type ReportServiceInterface interface {
-	Save(document sample.Document)
+	Save(document sample.Document) error
 	Find(int, int) []sample.Document
 }

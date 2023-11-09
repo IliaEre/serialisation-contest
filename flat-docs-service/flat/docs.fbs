@@ -3,7 +3,7 @@
 namespace docs.sample;
 
 table SaveRequest {
-    docs: [Document];
+    document: Document;
 }
 
 table SaveResponse {
