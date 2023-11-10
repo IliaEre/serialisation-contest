@@ -8,15 +8,11 @@ import (
 )
 
 const (
-	BenchCall  = 100_000
-	BatchSize  = 1000
 	bufferSize = 1024
 )
 
 func BenchmarkCreateAndCheck(b *testing.B) {
-	b.N = BenchCall
-
-	for i := 0; i < BenchCall; i++ {
+	for i := 0; i < b.N; i++ {
 		buf := BuildDocs()
 		parserDocs := sample.GetRootAsDocument(buf, 0)
 
@@ -32,12 +28,9 @@ func BenchmarkCreateAndCheck(b *testing.B) {
 }
 
 func BenchmarkCreate(b *testing.B) {
-	b.N = BenchCall
-
-	for i := 0; i < BenchCall; i++ {
+	for i := 0; i < b.N; i++ {
 		buf := BuildDocs()
-		parserDocs := sample.GetRootAsDocument(buf, 0)
-		assert.Equal(b, "IT", string(parserDocs.Name()))
+		sample.GetRootAsDocument(buf, 0)
 	}
 }
 
