@@ -1,9 +1,9 @@
 package handler
 
 import (
-	"flat--docs-service/flat/docs/sample"
-	"flat--docs-service/internal/service"
-	"flat--docs-service/pkg/mapper"
+	"flat-docs-service/flat/docs/sample"
+	"flat-docs-service/internal/service"
+	"flat-docs-service/pkg/mapper"
 	"github.com/gin-gonic/gin"
 	flatbuffers "github.com/google/flatbuffers/go"
 	"io"

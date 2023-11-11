@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"os"
 	"proto-docs-service/grpc/docs"
-	server "proto-docs-service/internal"
 	"proto-docs-service/internal/service"
+	"proto-docs-service/pkg/server"
 	"runtime/debug"
 	"syscall"
 

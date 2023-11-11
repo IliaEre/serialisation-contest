@@ -2,7 +2,7 @@ package service
 
 import (
 	"bufio"
-	"flat--docs-service/flat/docs/sample"
+	"flat-docs-service/flat/docs/sample"
 	flatbuffers "github.com/google/flatbuffers/go"
 	"os"
 )
@@ -35,7 +35,7 @@ func GenerateSave() {
 	prices := BuildPrices(builder)
 	owner := BuildOwner(builder)
 	transaction := BuildTransaction(builder)
-	data := BuildDate(builder, transaction)
+	data := BuildData(builder, transaction)
 	address := BuildAddress(builder)
 	delivery := BuildDelivery(builder, address)
 	goods := BuildGoods(builder)

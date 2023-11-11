@@ -1,4 +1,4 @@
-module flat--docs-service
+module flat-docs-service
 
 go 1.21.1
 

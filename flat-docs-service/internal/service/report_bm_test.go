@@ -1,7 +1,8 @@
 package service
 
 import (
-	"flat--docs-service/flat/docs/sample"
+	"flat-docs-service/flat/docs/sample"
+	"flat-docs-service/pkg/mapper"
 	flatbuffers "github.com/google/flatbuffers/go"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -27,10 +28,28 @@ func BenchmarkCreateAndCheck(b *testing.B) {
 	}
 }
 
+// BenchmarkCreate-10    	   99787	     11946 ns/op
+func BenchmarkCreateMarshal(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		buf := BuildDocs()
+		doc := sample.GetRootAsDocument(buf, 0)
+		doc.Name()
+
+		builder := flatbuffers.NewBuilder(1024)
+		copyDoc := mapper.CreateDocument(builder, doc)
+		builder.Finish(copyDoc)
+		fb := builder.FinishedBytes()
+		cd := sample.GetRootAsDocument(fb, 0)
+		cd.Name()
+	}
+}
+
+// BenchmarkCreate-10    	  262014	      4561 ns/op
 func BenchmarkCreate(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		buf := BuildDocs()
-		sample.GetRootAsDocument(buf, 0)
+		doc := sample.GetRootAsDocument(buf, 0)
+		doc.Name()
 	}
 }
 
@@ -42,7 +61,7 @@ func BuildDocs() []byte {
 	prices := BuildPrices(builder)
 	owner := BuildOwner(builder)
 	transaction := BuildTransaction(builder)
-	data := BuildDate(builder, transaction)
+	data := BuildData(builder, transaction)
 	address := BuildAddress(builder)
 	delivery := BuildDelivery(builder, address)
 	goods := BuildGoods(builder)
@@ -119,7 +138,7 @@ func BuildOwner(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
 	return owner
 }
 
-func BuildDate(builder *flatbuffers.Builder, transaction flatbuffers.UOffsetT) flatbuffers.UOffsetT {
+func BuildData(builder *flatbuffers.Builder, transaction flatbuffers.UOffsetT) flatbuffers.UOffsetT {
 	sample.DataStart(builder)
 	sample.DataAddTransaction(builder, transaction)
 	data := sample.DataEnd(builder)

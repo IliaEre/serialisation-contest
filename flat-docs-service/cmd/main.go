@@ -2,8 +2,8 @@ package main
 
 import (
 	"context"
-	"flat--docs-service/internal/service"
-	"flat--docs-service/pkg/handler"
+	"flat-docs-service/internal/service"
+	"flat-docs-service/pkg/handler"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	ginprometheus "github.com/zsais/go-gin-prometheus"

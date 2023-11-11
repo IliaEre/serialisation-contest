@@ -1,7 +1,7 @@
 package service
 
 import (
-	"flat--docs-service/flat/docs/sample"
+	"flat-docs-service/flat/docs/sample"
 )
 
 type ReportServiceInterface interface {

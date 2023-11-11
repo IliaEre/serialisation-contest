@@ -1,7 +1,7 @@
 package mapper
 
 import (
-	"flat--docs-service/flat/docs/sample"
+	"flat-docs-service/flat/docs/sample"
 	flatbuffers "github.com/google/flatbuffers/go"
 )
 
