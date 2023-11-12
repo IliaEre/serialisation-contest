@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-// BenchmarkCreateAndMarshal-10    	  140275	      8426 ns/op
+// BenchmarkCreateAndMarshal-10    	  651063	      1827 ns/op
 func BenchmarkCreateAndMarshal(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		doc := CreateDoc()

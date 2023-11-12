@@ -15,7 +15,7 @@ func CreateDocument(builder *flatbuffers.Builder, doc *sample.Document) flatbuff
 	delivery := CreateDelivery(builder, doc.Delivery(new(sample.Delivery)))
 
 	goodsObj := new(sample.Goods)
-	goodsList := make([]flatbuffers.UOffsetT, doc.GoodsLength())
+	goodsList := make([]flatbuffers.UOffsetT, 0)
 	for i := 0; i < doc.GoodsLength(); i++ {
 		doc.Goods(goodsObj, i)
 		cg := CreateGoods(builder, goodsObj)

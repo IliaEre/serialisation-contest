@@ -2,6 +2,7 @@ package service
 
 import (
 	"flat-docs-service/flat/docs/sample"
+	"flat-docs-service/internal/builder"
 	"flat-docs-service/pkg/mapper"
 	flatbuffers "github.com/google/flatbuffers/go"
 	"github.com/stretchr/testify/assert"
@@ -12,9 +13,10 @@ const (
 	bufferSize = 1024
 )
 
-func BenchmarkCreateAndCheck(b *testing.B) {
+func _BenchmarkCreateAndCheck(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		buf := BuildDocs()
+		newBuilder := flatbuffers.NewBuilder(bufferSize)
+		buf := BuildDocs(newBuilder)
 		parserDocs := sample.GetRootAsDocument(buf, 0)
 
 		assert.Equal(b, "IT", string(parserDocs.Name()))
@@ -28,33 +30,80 @@ func BenchmarkCreateAndCheck(b *testing.B) {
 	}
 }
 
-// BenchmarkCreate-10    	   99787	     11946 ns/op
-func BenchmarkCreateMarshal(b *testing.B) {
+// BenchmarkCreateAndMarshal-10             6116926              1938 ns/op
+func BenchmarkCreateAndMarshal(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		buf := BuildDocs()
+		newBuilder := flatbuffers.NewBuilder(bufferSize)
+		buf := BuildDocs(newBuilder)
 		doc := sample.GetRootAsDocument(buf, 0)
 		doc.Name()
 
-		builder := flatbuffers.NewBuilder(1024)
-		copyDoc := mapper.CreateDocument(builder, doc)
-		builder.Finish(copyDoc)
-		fb := builder.FinishedBytes()
+		resultBuilder := flatbuffers.NewBuilder(bufferSize)
+		copyDoc := mapper.CreateDocument(resultBuilder, doc)
+		resultBuilder.Finish(copyDoc)
+		fb := resultBuilder.FinishedBytes()
 		cd := sample.GetRootAsDocument(fb, 0)
 		cd.Name()
 	}
 }
 
-// BenchmarkCreate-10    	  262014	      4561 ns/op
-func BenchmarkCreate(b *testing.B) {
+// BenchmarkCreateCommonBuilder-10    	 1153266	      1260 ns/op
+func _BenchmarkCreateCommonBuilder(b *testing.B) {
+	newBuilder := flatbuffers.NewBuilder(bufferSize)
+
 	for i := 0; i < b.N; i++ {
-		buf := BuildDocs()
+		buf := BuildDocs(newBuilder)
 		doc := sample.GetRootAsDocument(buf, 0)
 		doc.Name()
 	}
 }
 
-func BuildDocs() []byte {
-	builder := flatbuffers.NewBuilder(bufferSize)
+// BenchmarkCreate-10                      14907242               804.3 ns/op
+func BenchmarkCreate(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		builder := flatbuffers.NewBuilder(bufferSize)
+		buf := BuildDocs(builder)
+		doc := sample.GetRootAsDocument(buf, 0)
+		doc.Name()
+	}
+}
+
+// BenchmarkCreateWithBuilderPool-10       17275099               701.3 ns/op
+func BenchmarkCreateWithBuilderPool(b *testing.B) {
+	builderPool := builder.NewBuilderPool(100)
+
+	for i := 0; i < b.N; i++ {
+		currentBuilder := builderPool.Get()
+		buf := BuildDocs(currentBuilder)
+		doc := sample.GetRootAsDocument(buf, 0)
+		doc.Name()
+		builderPool.Put(currentBuilder)
+	}
+}
+
+func BenchmarkCreateAndMarshalBuilderPool(b *testing.B) {
+	builderPool := builder.NewBuilderPool(100)
+
+	for i := 0; i < b.N; i++ {
+		currentBuilder := builderPool.Get()
+
+		buf := BuildDocs(currentBuilder)
+		doc := sample.GetRootAsDocument(buf, 0)
+		doc.Name()
+
+		// clear it
+		currentBuilder.Reset()
+
+		copyDoc := mapper.CreateDocument(currentBuilder, doc)
+		currentBuilder.Finish(copyDoc)
+		fb := currentBuilder.FinishedBytes()
+		cd := sample.GetRootAsDocument(fb, 0)
+		cd.Name()
+		builderPool.Put(currentBuilder)
+	}
+}
+
+func BuildDocs(builder *flatbuffers.Builder) []byte {
 	// build internal objects
 	employee := BuildEmployee(builder)
 	department := BuildDepartment(builder, employee)
@@ -64,10 +113,14 @@ func BuildDocs() []byte {
 	data := BuildData(builder, transaction)
 	address := BuildAddress(builder)
 	delivery := BuildDelivery(builder, address)
-	goods := BuildGoods(builder)
+
+	goods := make([]flatbuffers.UOffsetT, 1)
+	for i := 0; i < 1; i++ {
+		goods[i] = BuildGoods(builder)
+	}
 
 	sample.DocumentStartGoodsVector(builder, 1)
-	builder.PrependUOffsetT(goods)
+	builder.PrependUOffsetT(goods[0])
 	goodsVector := builder.EndVector(1)
 	// fill doc's name:
 	documentCode := builder.CreateString("IT")
@@ -92,6 +145,7 @@ func BuildEmployee(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
 	name := builder.CreateString("test")
 	surname := builder.CreateString("testovich")
 	code := builder.CreateString("code_123")
+
 	// build employee
 	sample.EmployeeStart(builder)
 	sample.EmployeeAddName(builder, name)
@@ -104,6 +158,7 @@ func BuildEmployee(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
 func BuildDepartment(builder *flatbuffers.Builder, employee flatbuffers.UOffsetT) flatbuffers.UOffsetT {
 	// fill department's fields
 	departmentCode := builder.CreateString("department_code")
+
 	// build department
 	sample.DepartmentStart(builder)
 	sample.DepartmentAddCode(builder, departmentCode)
@@ -116,8 +171,9 @@ func BuildDepartment(builder *flatbuffers.Builder, employee flatbuffers.UOffsetT
 func BuildPrices(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
 	// create prices
 	priceA := builder.CreateString("10.2")
-	priceB := builder.CreateString("10.2")
-	priceC := builder.CreateString("10.2")
+	priceB := builder.CreateString("10.3")
+	priceC := builder.CreateString("10.4")
+
 	// build price
 	sample.PriceStart(builder)
 	sample.PriceAddCategoryA(builder, priceA)
@@ -131,6 +187,7 @@ func BuildOwner(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
 	// create fields
 	uuid := builder.CreateString("sdfsr132rfds12edsffsdfg")
 	secret := builder.CreateString("strange code like uuid but not!")
+
 	sample.OwnerStart(builder)
 	sample.OwnerAddUuid(builder, uuid)
 	sample.OwnerAddSecret(builder, secret)
@@ -149,6 +206,7 @@ func BuildTransaction(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
 	tType := builder.CreateString("MOVE")
 	uuid := builder.CreateString("sdfsr132rfds12edsffsdfg")
 	pointCode := builder.CreateString("1231031230")
+
 	sample.TransactionStart(builder)
 	sample.TransactionAddType(builder, tType)
 	sample.TransactionAddUuid(builder, uuid)
@@ -159,6 +217,7 @@ func BuildTransaction(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
 
 func BuildDelivery(builder *flatbuffers.Builder, address flatbuffers.UOffsetT) flatbuffers.UOffsetT {
 	company := builder.CreateString("NTF_N1")
+
 	sample.DeliveryStart(builder)
 	sample.DeliveryAddCompany(builder, company)
 	sample.DeliveryAddAddress(builder, address)

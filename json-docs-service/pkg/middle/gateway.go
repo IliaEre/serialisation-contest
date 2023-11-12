@@ -3,7 +3,7 @@ package middle
 import (
 	"github.com/gin-gonic/gin"
 	"json-docs-service/internal/model"
-	"json-docs-service/internal/service"
+	service2 "json-docs-service/pkg/service"
 	"net/http"
 	"strconv"
 )
@@ -15,10 +15,10 @@ type GatewayInterface interface {
 
 type HttpGateway struct {
 	GatewayInterface
-	reportService service.ReportServiceInterface
+	reportService service2.ReportServiceInterface
 }
 
-func NewHttpGateway(rs service.ReportService) *HttpGateway {
+func NewHttpGateway(rs service2.ReportService) *HttpGateway {
 	return &HttpGateway{reportService: rs}
 }
 

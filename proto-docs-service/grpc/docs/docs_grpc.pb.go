@@ -14,7 +14,7 @@ import (
 // Requires gRPC-Go v1.32.0 or later.
 const _ = grpc.SupportPackageIsVersion7
 
-// DocumentServiceClient is the client API for DocumentService service.
+// DocumentServiceClient is the client API for DocumentService report_service.go.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type DocumentServiceClient interface {
@@ -48,7 +48,7 @@ func (c *documentServiceClient) Save(ctx context.Context, in *SaveRequest, opts 
 	return out, nil
 }
 
-// DocumentServiceServer is the server API for DocumentService service.
+// DocumentServiceServer is the server API for DocumentService report_service.go.
 // All implementations must embed UnimplementedDocumentServiceServer
 // for forward compatibility
 type DocumentServiceServer interface {
@@ -69,7 +69,7 @@ func (UnimplementedDocumentServiceServer) Save(context.Context, *SaveRequest) (*
 }
 func (UnimplementedDocumentServiceServer) mustEmbedUnimplementedDocumentServiceServer() {}
 
-// UnsafeDocumentServiceServer may be embedded to opt out of forward compatibility for this service.
+// UnsafeDocumentServiceServer may be embedded to opt out of forward compatibility for this report_service.go.
 // Use of this interface is not recommended, as added methods to DocumentServiceServer will
 // result in compilation errors.
 type UnsafeDocumentServiceServer interface {
@@ -116,7 +116,7 @@ func _DocumentService_Save_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
-// DocumentService_ServiceDesc is the grpc.ServiceDesc for DocumentService service.
+// DocumentService_ServiceDesc is the grpc.ServiceDesc for DocumentService report_service.go.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var DocumentService_ServiceDesc = grpc.ServiceDesc{
