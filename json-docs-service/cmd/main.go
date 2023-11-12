@@ -14,9 +14,10 @@ import (
 )
 
 const (
-	post = "/report"
-	get  = "/reports"
-	TTL  = 5
+	post    = "/report"
+	get     = "/reports"
+	TTL     = 5
+	address = ":9091"
 )
 
 func main() {
@@ -30,7 +31,7 @@ func main() {
 	router.GET(get, gw.Find)
 
 	srv := &http.Server{
-		Addr:    "localhost:8080",
+		Addr:    address,
 		Handler: router,
 	}
 
