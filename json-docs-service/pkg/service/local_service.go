@@ -77,7 +77,7 @@ func (sv ReportService) Find(limit int, offset int) []model.Document {
 		return nil
 	}
 	if offset+limit > len(Docs) {
-		return Docs[offset:len(Docs)]
+		return Docs[offset:]
 	}
 
 	return Docs[offset : offset+limit]

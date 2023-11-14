@@ -2,11 +2,11 @@ package main
 
 import (
 	"context"
+	"flat-docs-service/internal/service"
+	"flat-docs-service/pkg/handler"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	ginprometheus "github.com/zsais/go-gin-prometheus"
-	"json-docs-service/pkg/middle"
-	"json-docs-service/pkg/service"
 	"net/http"
 	"os"
 	"os/signal"
@@ -14,10 +14,10 @@ import (
 )
 
 const (
-	post    = "/report"
-	get     = "/reports"
-	TTL     = 5
-	address = ":9091"
+	post = "/save"
+	get  = "/find"
+	TTL  = 5
+	addr = "0.0.0.0:50051"
 )
 
 func main() {
@@ -25,13 +25,13 @@ func main() {
 	p := ginprometheus.NewPrometheus("gin")
 	p.Use(router)
 	sv := service.NewReportService()
-	gw := middle.NewHttpGateway(*sv)
+	gw := handler.NewHandler(*sv)
 
 	router.POST(post, gw.Save)
-	router.GET(get, gw.Find)
+	router.GET(get, gw.FindByParams)
 
 	srv := &http.Server{
-		Addr:    address,
+		Addr:    addr,
 		Handler: router,
 	}
 
@@ -59,4 +59,5 @@ func main() {
 	}
 
 	fmt.Println("Server exiting")
+
 }

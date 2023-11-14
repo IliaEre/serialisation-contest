@@ -1,0 +1,52 @@
+version: '3.1'
+
+networks:
+  loadnetwork:
+    driver: bridge
+
+services:
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - loadnetwork
+    volumes:
+      - grafana-storage:/var/lib/grafana
+
+  json-docs-service:
+    image: json-docs-service:latest
+    container_name: json-docs-service
+    ports:
+      - "9091:9091"
+    networks:
+      - loadnetwork
+
+  proto-docs-service:
+    image: proto-docs-service:latest
+    container_name: proto-docs-service
+    ports:
+      - "9092:9092"
+      - "84:84"
+    networks:
+      - loadnetwork
+
+  prometheus:
+    image: prom/prometheus:v2.47.2
+    volumes:
+      - ./prometheus/:/etc/prometheus/
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    ports:
+      - "9090:9090"
+    networks:
+      - loadnetwork
+
+volumes:
+  grafana-storage:
+  prometheus_data:

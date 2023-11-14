@@ -1,0 +1,81 @@
+// Example docs schema
+
+namespace docs.sample;
+
+table SaveRequest {
+    document: Document;
+}
+
+table SaveResponse {
+    message: string;
+}
+
+table FindRequest {
+    limit: int32;
+    offset: int32;
+}
+
+table FindResponse {
+    docs: [Document];
+}
+
+table Department {
+  code: string;
+  time: long;
+  employee: Employee;
+}
+
+table Employee {
+  name: string;
+  surname: string;
+  code: string;
+}
+
+table Price {
+  category_a: string;
+  category_b: string;
+  category_c: string;
+}
+
+table Owner {
+  uuid: string;
+  secret: string;
+}
+
+table Transaction {
+  type: string;
+  uuid: string;
+  point_code: string;
+}
+
+table Data {
+  transaction: Transaction;
+}
+
+table Address {
+  code: string;
+  country: string;
+  street: string;
+  apartment: string;
+}
+
+table Goods {
+  name: string;
+  amount: int;
+  code: string;
+}
+
+table Document {
+  name: string;
+  department: Department;
+  price: Price;
+  owner: Owner;
+  data: Data;
+  delivery: Delivery;
+  goods: [Goods];
+}
+
+table Delivery {
+  company: string;
+  address: Address;
+}

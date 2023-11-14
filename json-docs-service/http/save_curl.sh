@@ -1,4 +1,4 @@
-curl -H POST localhost:8080/report -d '{
+curl -H POST localhost:9091/report -vv -d '{
   "docs": {
     "name": "name_for_documents",
     "department": {

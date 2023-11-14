@@ -1,8 +1,8 @@
 package service
 
-import "proto-docs-service/internal/model"
+import "proto-docs-service/grpc/docs"
 
 type ReportServiceInterface interface {
-	Save(model.Document)
-	Find(int, int) []model.Document
+	Save(docs.Document)
+	Find(int, int) []docs.Document
 }
