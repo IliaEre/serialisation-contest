@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"github.com/prometheus/client_golang/prometheus/collectors"
 	"go.opentelemetry.io/otel/trace"
 	"log"
 	"net"
@@ -24,6 +25,11 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+const (
+	grpcAddress = ":84"
+	httpAddress = ":9092"
+)
+
 func main() {
 	// metrics
 	srvMetrics := grpcprom.NewServerMetrics(
@@ -32,7 +38,11 @@ func main() {
 		),
 	)
 	reg := prometheus.NewRegistry()
-	reg.MustRegister(srvMetrics)
+	reg.MustRegister(
+		collectors.NewGoCollector(),
+		collectors.NewProcessCollector(collectors.ProcessCollectorOpts{}),
+		srvMetrics,
+	)
 	exemplarFromContext := func(ctx context.Context) prometheus.Labels {
 		if span := trace.SpanContextFromContext(ctx); span.IsSampled() {
 			return prometheus.Labels{"traceID": span.TraceID().String()}
@@ -68,7 +78,7 @@ func main() {
 
 	g := &run.Group{}
 	g.Add(func() error {
-		l, err := net.Listen("tcp", ":84")
+		l, err := net.Listen("tcp", grpcAddress)
 		if err != nil {
 			return err
 		}
@@ -79,7 +89,7 @@ func main() {
 		grpcSrv.Stop()
 	})
 
-	httpSrv := &http.Server{Addr: ":8081"}
+	httpSrv := &http.Server{Addr: httpAddress}
 	g.Add(func() error {
 		m := http.NewServeMux()
 		// Create HTTP handler for Prometheus metrics.

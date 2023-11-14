@@ -23,8 +23,17 @@ services:
     networks:
       - loadnetwork
 
+  proto-docs-service:
+    image: proto-docs-service:latest
+    container_name: proto-docs-service
+    ports:
+      - "9092:9092"
+      - "84:84"
+    networks:
+      - loadnetwork
+
   prometheus:
-    image: prom/prometheus:v2.24.0
+    image: prom/prometheus:v2.47.2
     volumes:
       - ./prometheus/:/etc/prometheus/
       - prometheus_data:/prometheus

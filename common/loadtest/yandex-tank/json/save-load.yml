@@ -5,13 +5,14 @@ phantom:
   ammofile: json/json-ammo.txt
   load_profile:
     load_type: rps
-    schedule: line(100, 250, 1m)
+    schedule: line(400, 1000, 1m)
   writelog: all
   ssl: false
   connection_test: true
 overload:
   enabled: true
   package: yandextank.plugins.DataUploader
+  job_name: "save docs"
   token_file: "env/token.txt"
 telegraf:
   enabled: false

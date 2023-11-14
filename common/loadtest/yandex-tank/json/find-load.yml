@@ -12,6 +12,7 @@ phantom:
 overload:
   enabled: true
   package: yandextank.plugins.DataUploader
+  job_name: "find docs"
   token_file: "env/token.txt"
 telegraf:
   enabled: false  

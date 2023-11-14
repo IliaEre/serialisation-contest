@@ -10,3 +10,7 @@ scrape_configs:
     metrics_path: /metrics
     static_configs:
       - targets: ['json-docs-service:9091']
+  - job_name: proto-docs-service
+    metrics_path: /metrics
+    static_configs:
+      - targets: ['proto-docs-service:9092']
