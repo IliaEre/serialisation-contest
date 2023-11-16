@@ -1,3 +1,5 @@
+github.com/IliaEre/serialisation-contest v0.0.0-20231116181627-ec41c63fe92c h1:QTWcmJt5Kraax4eHB117pq+L8sfeYccYQcLy6ByyFek=
+github.com/IliaEre/serialisation-contest v0.0.0-20231116181627-ec41c63fe92c/go.mod h1:cP1GnzuOCjU73cHjrbhD6QGtcBITLXGQRmREoYrftpU=
 github.com/IliaEre/serialisation-contest/common v0.0.0-20231116181627-ec41c63fe92c h1:IatfVI66lm66+Jz679FjAljhKFNrWOSxPlj/YzHTwfc=
 github.com/IliaEre/serialisation-contest/common v0.0.0-20231116181627-ec41c63fe92c/go.mod h1:Pc+sATCO+5o9Owp1idABiqVmdCb5P6vckOzUTVk02VI=
 github.com/beorn7/perks v1.0.1 h1:VlbKKnNfV8bJzeqoa4cOKqO6bYr3WgKZxO8Z16+hsOM=

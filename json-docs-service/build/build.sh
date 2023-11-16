@@ -1,0 +1,1 @@
+cd .. && docker build . -t json-docs-service

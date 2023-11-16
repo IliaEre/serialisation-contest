@@ -5,7 +5,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	pb "proto-docs-service/grpc/docs"
-	"proto-docs-service/internal/service"
+	"proto-docs-service/pkg/service"
 )
 
 type Server struct {
@@ -24,9 +24,9 @@ func (s *Server) GetAllByLimitAndOffset(ctx context.Context, req *pb.GetAllReque
 	}
 
 	if len(docs) != 0 {
-		typedDocs := make([]*pb.Document, len(docs))
+		var typedDocs []*pb.Document
 		for _, document := range docs {
-			typedDocs = append(typedDocs, &document)
+			typedDocs = append(typedDocs, document)
 		}
 
 		return &pb.GetAllResponse{Documents: typedDocs}, nil

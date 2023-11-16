@@ -10,6 +10,7 @@ require (
 )
 
 require (
+	github.com/IliaEre/serialisation-contest v0.0.0-20231116181627-ec41c63fe92c // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bytedance/sonic v1.9.1 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect

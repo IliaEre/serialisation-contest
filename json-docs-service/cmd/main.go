@@ -3,10 +3,10 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/IliaEre/serialisation-contest/golang/common/db"
 	"github.com/gin-gonic/gin"
 	ginprometheus "github.com/zsais/go-gin-prometheus"
 	"go.mongodb.org/mongo-driver/mongo"
+	"json-docs-service/pkg/db"
 	"json-docs-service/pkg/middle"
 	"json-docs-service/pkg/service"
 	"log"
@@ -23,6 +23,7 @@ const (
 	address      = ":9091"
 	mongoAddress = "mongodb://mongo:27017"
 	subsystem    = "gin"
+	collection   = "jsonReports"
 )
 
 func main() {
@@ -30,7 +31,7 @@ func main() {
 	p := ginprometheus.NewPrometheus(subsystem)
 	p.Use(router)
 
-	rc, err := db.NewMongoRepository(mongoAddress)
+	rc, err := db.NewRepository(mongoAddress, collection)
 	if err != nil {
 		log.Fatal("Could create mongo:", err)
 	}
@@ -39,7 +40,6 @@ func main() {
 		err := Client.Disconnect(ctx)
 		if err != nil {
 			log.Fatal("Could create mongo:", err)
-
 		}
 	}(&rc.Client, context.Background())
 

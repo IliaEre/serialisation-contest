@@ -2,8 +2,8 @@ package middle
 
 import (
 	"fmt"
-	m "github.com/IliaEre/serialisation-contest/common/model"
 	"github.com/gin-gonic/gin"
+	"json-docs-service/pkg/model"
 	s "json-docs-service/pkg/service"
 	"net/http"
 	"strconv"
@@ -43,7 +43,7 @@ func (h HttpGateway) Find(c *gin.Context) {
 }
 
 func (h HttpGateway) Save(c *gin.Context) {
-	var document m.Document
+	var document model.Document
 	if err := c.BindJSON(&document); err != nil {
 		fmt.Println("Error while parsing the doc", err)
 		sendError(c)

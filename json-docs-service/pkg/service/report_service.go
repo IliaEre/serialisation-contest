@@ -1,8 +1,10 @@
 package service
 
-import m "github.com/IliaEre/serialisation-contest/common/model"
+import (
+	"json-docs-service/pkg/model"
+)
 
 type ReportServiceInterface interface {
-	Save(m.Document) error
-	Find(int, int) ([]m.Document, error)
+	Save(model.Document) error
+	Find(int, int) ([]model.Document, error)
 }

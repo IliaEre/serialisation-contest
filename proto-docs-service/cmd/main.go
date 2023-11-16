@@ -9,9 +9,9 @@ import (
 	"net/http"
 	"os"
 	"proto-docs-service/grpc/docs"
-	"proto-docs-service/internal/service"
+	"proto-docs-service/internal/server"
 	"proto-docs-service/pkg/db"
-	"proto-docs-service/pkg/server"
+	"proto-docs-service/pkg/service"
 	"runtime/debug"
 	"syscall"
 
@@ -29,7 +29,8 @@ import (
 const (
 	grpcAddress  = ":84"
 	httpAddress  = ":9092"
-	mongoAddress = "mongodb://localhost:27017"
+	mongoAddress = "mongodb://mongo:27017"
+	collection   = "grpcReports"
 )
 
 func main() {
@@ -73,7 +74,7 @@ func main() {
 		),
 	)
 
-	mc, err := db.NewMongoRepository(mongoAddress)
+	mc, err := db.NewMongoRepository(mongoAddress, collection)
 	if err != nil {
 		log.Println("err", err)
 		os.Exit(1)

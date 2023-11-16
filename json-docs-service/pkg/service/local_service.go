@@ -1,23 +1,24 @@
 package service
 
 import (
-	db "github.com/IliaEre/serialisation-contest/common/db"
-	m "github.com/IliaEre/serialisation-contest/common/model"
+	"json-docs-service/pkg/db"
+	"json-docs-service/pkg/model"
 )
 
 type ReportService struct {
-	rc db.ReportMongoRepository
 	ReportServiceInterface
+
+	rc db.ReportClientRepository
 }
 
-func NewReportService(mongo *db.ReportMongoRepository) *ReportService {
-	return &ReportService{rc: *mongo}
+func NewReportService(mongo db.ReportClientRepository) *ReportService {
+	return &ReportService{rc: mongo}
 }
 
-func (sv ReportService) Save(doc m.Document) error {
+func (sv ReportService) Save(doc model.Document) error {
 	return sv.rc.Save(doc)
 }
 
-func (sv ReportService) Find(limit int, offset int) ([]m.Document, error) {
+func (sv ReportService) Find(limit int, offset int) ([]model.Document, error) {
 	return sv.rc.Find(limit, offset)
 }

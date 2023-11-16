@@ -7,18 +7,19 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
-	"proto-docs-service/grpc/docs"
+	"proto-docs-service/pkg/model"
 )
 
-const collectionName = "grpcReports"
 const db = "loadtest"
 
 type ReportMongoRepository struct {
-	Client mongo.Client
 	ReportClientRepository
+
+	Client         mongo.Client
+	CollectionName string
 }
 
-func NewMongoRepository(address string) (*ReportMongoRepository, error) {
+func NewMongoRepository(address, collectionName string) (*ReportMongoRepository, error) {
 	clientOptions := options.Client().ApplyURI(address)
 	clientOptions.SetAuth(options.Credential{ // not secure, I know, sorry :D
 		Username: "root",
@@ -34,11 +35,11 @@ func NewMongoRepository(address string) (*ReportMongoRepository, error) {
 		return nil, err
 	}
 
-	return &ReportMongoRepository{Client: *client}, nil
+	return &ReportMongoRepository{Client: *client, CollectionName: collectionName}, nil
 }
 
-func (rm *ReportMongoRepository) Find(limit int, offset int) ([]docs.Document, error) {
-	collection := rm.Client.Database(db).Collection(collectionName)
+func (rm *ReportMongoRepository) Find(limit int, offset int) ([]model.Document, error) {
+	collection := rm.Client.Database(db).Collection(rm.CollectionName)
 	findOptions := options.Find().SetLimit(int64(limit)).SetSkip(int64(offset))
 
 	cursor, err := collection.Find(context.Background(), bson.D{}, findOptions)
@@ -53,9 +54,9 @@ func (rm *ReportMongoRepository) Find(limit int, offset int) ([]docs.Document, e
 		}
 	}(cursor, context.Background())
 
-	var docsList []docs.Document
+	var docsList []model.Document
 	for cursor.Next(context.Background()) {
-		var doc docs.Document
+		var doc model.Document
 		if err := cursor.Decode(&doc); err != nil {
 			return nil, err
 		}
@@ -65,8 +66,8 @@ func (rm *ReportMongoRepository) Find(limit int, offset int) ([]docs.Document, e
 	return docsList, nil
 }
 
-func (rm *ReportMongoRepository) Save(doc *docs.Document) error {
-	collection := rm.Client.Database(db).Collection(collectionName)
+func (rm *ReportMongoRepository) Save(doc model.Document) error {
+	collection := rm.Client.Database(db).Collection(rm.CollectionName)
 	insertResult, err := collection.InsertOne(context.Background(), doc)
 	if err != nil {
 		return err

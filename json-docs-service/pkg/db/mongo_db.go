@@ -3,22 +3,23 @@ package db
 import (
 	"context"
 	"fmt"
-	"github.com/IliaEre/serialisation-contest/golang/common/model"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"json-docs-service/pkg/model"
 	"log"
 )
 
 const db = "loadtest"
 
 type ReportMongoRepository struct {
+	ReportClientRepository
+
 	CollectionName string
 	Client         mongo.Client
-	ReportClientRepository
 }
 
-func NewMongoRepository(address, collectionName string) (*ReportMongoRepository, error) {
+func NewRepository(address, collectionName string) (*ReportMongoRepository, error) {
 	clientOptions := options.Client().ApplyURI(address)
 	clientOptions.SetAuth(options.Credential{ // not secure, I know, sorry :D
 		Username: "root",
