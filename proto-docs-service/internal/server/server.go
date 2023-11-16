@@ -10,6 +10,7 @@ import (
 
 type Server struct {
 	pb.DocumentServiceServer
+
 	middle service.ReportService
 }
 

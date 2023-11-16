@@ -31,7 +31,7 @@ func _BenchmarkCreateAndCheck(b *testing.B) {
 }
 
 // BenchmarkCreateAndMarshal-10             6116926              1938 ns/op
-func BenchmarkCreateAndMarshal(b *testing.B) {
+func _BenchmarkCreateAndMarshal(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		newBuilder := flatbuffers.NewBuilder(bufferSize)
 		buf := BuildDocs(newBuilder)
@@ -58,18 +58,8 @@ func _BenchmarkCreateCommonBuilder(b *testing.B) {
 	}
 }
 
-// BenchmarkCreate-10                      14907242               804.3 ns/op
-func BenchmarkCreate(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		builder := flatbuffers.NewBuilder(bufferSize)
-		buf := BuildDocs(builder)
-		doc := sample.GetRootAsDocument(buf, 0)
-		doc.Name()
-	}
-}
-
 // BenchmarkCreateWithBuilderPool-10       17275099               701.3 ns/op
-func BenchmarkCreateWithBuilderPool(b *testing.B) {
+func _BenchmarkCreateWithBuilderPool(b *testing.B) {
 	builderPool := builder.NewBuilderPool(100)
 
 	for i := 0; i < b.N; i++ {
@@ -81,6 +71,31 @@ func BenchmarkCreateWithBuilderPool(b *testing.B) {
 	}
 }
 
+// BenchmarkCreate-10                      14907242               804.3 ns/op
+func _BenchmarkCreate(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		b := flatbuffers.NewBuilder(bufferSize)
+		buf := BuildDocs(b)
+		doc := sample.GetRootAsDocument(buf, 0)
+		doc.Name()
+	}
+}
+
+// BenchmarkCreatePool-10    	 1709313	       698.6 ns/op
+func BenchmarkCreatePool(b *testing.B) {
+	builderPool := builder.NewBuilderPool(10)
+
+	for i := 0; i < b.N; i++ {
+		b := builderPool.Get()
+		buf := BuildDocs(b)
+		doc := sample.GetRootAsDocument(buf, 0)
+		_ = doc.Name()
+
+		builderPool.Put(b)
+	}
+}
+
+// BenchmarkCreateAndMarshalBuilderPool-10    	  344282	      3467 ns/op
 func BenchmarkCreateAndMarshalBuilderPool(b *testing.B) {
 	builderPool := builder.NewBuilderPool(100)
 
@@ -89,20 +104,12 @@ func BenchmarkCreateAndMarshalBuilderPool(b *testing.B) {
 
 		buf := BuildDocs(currentBuilder)
 		doc := sample.GetRootAsDocument(buf, 0)
-		doc.Name()
+		_ = doc.Name()
 
-		// clear it
-		bbf := currentBuilder.Bytes
-		for i := range bbf {
-			bbf[i] = 0
-		}
-		currentBuilder.Reset()
+		sb := doc.Table().Bytes
+		cd := sample.GetRootAsDocument(sb, 0)
+		_ = cd.Name()
 
-		copyDoc := mapper.CreateDocument(currentBuilder, doc)
-		currentBuilder.Finish(copyDoc)
-		fb := currentBuilder.FinishedBytes()
-		cd := sample.GetRootAsDocument(fb, 0)
-		cd.Name()
 		builderPool.Put(currentBuilder)
 	}
 }

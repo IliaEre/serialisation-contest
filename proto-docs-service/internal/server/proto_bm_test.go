@@ -11,7 +11,7 @@ import (
 func BenchmarkCreateAndMarshal(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		doc := CreateDoc()
-		doc.GetName()
+		_ = doc.GetName()
 		r, e := proto.Marshal(&doc)
 		if e != nil {
 			log.Fatal("problem with marshal")
@@ -21,7 +21,7 @@ func BenchmarkCreateAndMarshal(b *testing.B) {
 		if proto.Unmarshal(r, nd) != nil {
 			log.Fatal("problem with unmarshal")
 		}
-		nd.GetName()
+		_ = nd.GetName()
 	}
 }
 
@@ -29,7 +29,7 @@ func BenchmarkCreateAndMarshal(b *testing.B) {
 func BenchmarkCreate(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		d := CreateDoc()
-		d.GetName()
+		_ = d.GetName()
 	}
 }
 
