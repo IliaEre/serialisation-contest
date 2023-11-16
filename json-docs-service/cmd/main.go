@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/IliaEre/serialisation-contest/common/db"
+	"github.com/IliaEre/serialisation-contest/golang/common/db"
 	"github.com/gin-gonic/gin"
 	ginprometheus "github.com/zsais/go-gin-prometheus"
 	"go.mongodb.org/mongo-driver/mongo"

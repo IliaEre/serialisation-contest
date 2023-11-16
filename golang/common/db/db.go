@@ -1,6 +1,6 @@
 package db
 
-import "github.com/IliaEre/serialisation-contest/common/model"
+import "github.com/IliaEre/serialisation-contest/golang/common/model"
 
 type ReportClientRepository interface {
 	Save(model.Document) error
