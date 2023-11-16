@@ -6,12 +6,12 @@ import (
 )
 
 type ReportService struct {
-	ReportServiceInterface
 	rc db.ReportMongoRepository
+	ReportServiceInterface
 }
 
-func NewReportService(redis db.ReportMongoRepository) *ReportService {
-	return &ReportService{rc: redis}
+func NewReportService(mongo *db.ReportMongoRepository) *ReportService {
+	return &ReportService{rc: *mongo}
 }
 
 func (sv ReportService) Save(doc model.Document) error {

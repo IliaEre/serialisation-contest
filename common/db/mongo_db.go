@@ -3,10 +3,10 @@ package db
 import (
 	"context"
 	"fmt"
+	"github.com/IliaEre/serialisation-contest/common/model"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"json-docs-service/internal/model"
 	"log"
 )
 

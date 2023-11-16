@@ -21,12 +21,13 @@ const (
 	get          = "/reports"
 	TTL          = 5
 	address      = ":9091"
-	mongoAddress = "mongodb://localhost:27017"
+	mongoAddress = "mongodb://mongo:27017"
+	subsystem    = "gin"
 )
 
 func main() {
 	router := gin.Default()
-	p := ginprometheus.NewPrometheus("gin")
+	p := ginprometheus.NewPrometheus(subsystem)
 	p.Use(router)
 
 	rc, err := db.NewMongoRepository(mongoAddress)
@@ -42,8 +43,8 @@ func main() {
 		}
 	}(&rc.Client, context.Background())
 
-	sv := service.NewReportService(*rc)
-	gw := middle.NewHttpGateway(*sv)
+	sv := service.NewReportService(rc)
+	gw := middle.NewHttpGateway(sv)
 
 	router.POST(post, gw.Save)
 	router.GET(get, gw.Find)

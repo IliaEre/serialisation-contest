@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"json-docs-service/internal/model"
-	service2 "json-docs-service/pkg/service"
+	s "json-docs-service/pkg/service"
 	"net/http"
 	"strconv"
 )
@@ -16,10 +16,10 @@ type GatewayInterface interface {
 
 type HttpGateway struct {
 	GatewayInterface
-	reportService service2.ReportServiceInterface
+	reportService s.ReportServiceInterface
 }
 
-func NewHttpGateway(rs service2.ReportService) *HttpGateway {
+func NewHttpGateway(rs *s.ReportService) *HttpGateway {
 	return &HttpGateway{reportService: rs}
 }
 
@@ -32,6 +32,7 @@ func (h HttpGateway) Find(c *gin.Context) {
 	result, err := h.reportService.Find(limit, offset)
 	if err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, err)
+		return
 	}
 
 	if len(result) != 0 {
