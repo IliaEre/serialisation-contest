@@ -1,9 +1,10 @@
 package middle
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"json-docs-service/internal/model"
-	service2 "json-docs-service/pkg/service"
+	s "json-docs-service/pkg/service"
 	"net/http"
 	"strconv"
 )
@@ -15,10 +16,10 @@ type GatewayInterface interface {
 
 type HttpGateway struct {
 	GatewayInterface
-	reportService service2.ReportServiceInterface
+	reportService s.ReportServiceInterface
 }
 
-func NewHttpGateway(rs service2.ReportService) *HttpGateway {
+func NewHttpGateway(rs *s.ReportService) *HttpGateway {
 	return &HttpGateway{reportService: rs}
 }
 
@@ -28,7 +29,12 @@ func (h HttpGateway) Find(c *gin.Context) {
 	limit, _ := strconv.Atoi(limitParam)
 	offset, _ := strconv.Atoi(offsetParam)
 
-	result := h.reportService.Find(limit, offset)
+	result, err := h.reportService.Find(limit, offset)
+	if err != nil {
+		c.IndentedJSON(http.StatusInternalServerError, err)
+		return
+	}
+
 	if len(result) != 0 {
 		c.IndentedJSON(http.StatusOK, result)
 	} else {
@@ -39,9 +45,21 @@ func (h HttpGateway) Find(c *gin.Context) {
 func (h HttpGateway) Save(c *gin.Context) {
 	var document model.Document
 	if err := c.BindJSON(&document); err != nil {
+		fmt.Println("Error while parsing the doc", err)
+		sendError(c)
 		return
 	}
 
-	h.reportService.Save(document)
+	err := h.reportService.Save(document)
+	if err != nil {
+		fmt.Println("Error while saving the doc", err)
+		sendError(c)
+		return
+	}
+
 	c.IndentedJSON(http.StatusCreated, gin.H{"status": "ok"})
+}
+
+func sendError(c *gin.Context) {
+	c.IndentedJSON(http.StatusInternalServerError, gin.H{"status": "error"})
 }

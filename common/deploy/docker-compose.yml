@@ -47,6 +47,17 @@ services:
     networks:
       - loadnetwork
 
+  mongo:
+    image: mongo
+    container_name: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    ports:
+      - "27017:27017"
+    networks:
+      - loadnetwork
+
 volumes:
   grafana-storage:
   prometheus_data:

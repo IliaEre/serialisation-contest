@@ -3,7 +3,7 @@ phantom:
   port: "9091"
   load_profile:
     load_type: rps
-    schedule: line(100, 250, 30s)
+    schedule: line(400, 1000, 60s)
   writelog: all
   ssl: false
   connection_test: true
