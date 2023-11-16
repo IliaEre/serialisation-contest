@@ -5,8 +5,11 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	ginprometheus "github.com/zsais/go-gin-prometheus"
+	"go.mongodb.org/mongo-driver/mongo"
+	"json-docs-service/pkg/db"
 	"json-docs-service/pkg/middle"
 	"json-docs-service/pkg/service"
+	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -14,17 +17,32 @@ import (
 )
 
 const (
-	post    = "/report"
-	get     = "/reports"
-	TTL     = 5
-	address = ":9091"
+	post         = "/report"
+	get          = "/reports"
+	TTL          = 5
+	address      = ":9091"
+	mongoAddress = "mongodb://localhost:27017"
 )
 
 func main() {
 	router := gin.Default()
 	p := ginprometheus.NewPrometheus("gin")
 	p.Use(router)
-	sv := service.NewReportService()
+
+	rc, err := db.NewMongoRepository(mongoAddress)
+	if err != nil {
+		log.Fatal("Could create mongo:", err)
+	}
+
+	defer func(Client *mongo.Client, ctx context.Context) {
+		err := Client.Disconnect(ctx)
+		if err != nil {
+			log.Fatal("Could create mongo:", err)
+
+		}
+	}(&rc.Client, context.Background())
+
+	sv := service.NewReportService(*rc)
 	gw := middle.NewHttpGateway(*sv)
 
 	router.POST(post, gw.Save)

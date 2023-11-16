@@ -92,6 +92,10 @@ func BenchmarkCreateAndMarshalBuilderPool(b *testing.B) {
 		doc.Name()
 
 		// clear it
+		bbf := currentBuilder.Bytes
+		for i := range bbf {
+			bbf[i] = 0
+		}
 		currentBuilder.Reset()
 
 		copyDoc := mapper.CreateDocument(currentBuilder, doc)
