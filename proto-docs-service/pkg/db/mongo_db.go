@@ -6,11 +6,11 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"json-docs-service/internal/model"
 	"log"
+	"proto-docs-service/grpc/docs"
 )
 
-const collectionName = "jsonReports"
+const collectionName = "grpcReports"
 const db = "loadtest"
 
 type ReportMongoRepository struct {
@@ -37,7 +37,7 @@ func NewMongoRepository(address string) (*ReportMongoRepository, error) {
 	return &ReportMongoRepository{Client: *client}, nil
 }
 
-func (rm *ReportMongoRepository) Find(limit int, offset int) ([]model.Document, error) {
+func (rm *ReportMongoRepository) Find(limit int, offset int) ([]docs.Document, error) {
 	collection := rm.Client.Database(db).Collection(collectionName)
 	findOptions := options.Find().SetLimit(int64(limit)).SetSkip(int64(offset))
 
@@ -53,21 +53,21 @@ func (rm *ReportMongoRepository) Find(limit int, offset int) ([]model.Document, 
 		}
 	}(cursor, context.Background())
 
-	var docs []model.Document
+	var docsList []docs.Document
 	for cursor.Next(context.Background()) {
-		var doc model.Document
+		var doc docs.Document
 		if err := cursor.Decode(&doc); err != nil {
 			return nil, err
 		}
-		docs = append(docs, doc)
+		docsList = append(docsList, doc)
 	}
 
-	return docs, nil
+	return docsList, nil
 }
 
-func (rm *ReportMongoRepository) Save(report model.Document) error {
+func (rm *ReportMongoRepository) Save(doc *docs.Document) error {
 	collection := rm.Client.Database(db).Collection(collectionName)
-	insertResult, err := collection.InsertOne(context.Background(), report)
+	insertResult, err := collection.InsertOne(context.Background(), doc)
 	if err != nil {
 		return err
 	}

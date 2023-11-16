@@ -1,8 +1,9 @@
 module json-docs-service
 
-go 1.20
+go 1.21.1
 
 require (
+	github.com/IliaEre/serialisation-contest/common v0.0.0-20231116181627-ec41c63fe92c
 	github.com/gin-gonic/gin v1.9.1
 	github.com/zsais/go-gin-prometheus v0.1.0
 	go.mongodb.org/mongo-driver v1.13.0

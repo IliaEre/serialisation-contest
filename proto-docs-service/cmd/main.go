@@ -10,6 +10,7 @@ import (
 	"os"
 	"proto-docs-service/grpc/docs"
 	"proto-docs-service/internal/service"
+	"proto-docs-service/pkg/db"
 	"proto-docs-service/pkg/server"
 	"runtime/debug"
 	"syscall"
@@ -26,8 +27,9 @@ import (
 )
 
 const (
-	grpcAddress = ":84"
-	httpAddress = ":9092"
+	grpcAddress  = ":84"
+	httpAddress  = ":9092"
+	mongoAddress = "mongodb://localhost:27017"
 )
 
 func main() {
@@ -71,8 +73,13 @@ func main() {
 		),
 	)
 
-	rs := service.NewReportService()
-	s := server.GetNewServer(*rs)
+	mc, err := db.NewMongoRepository(mongoAddress)
+	if err != nil {
+		log.Println("err", err)
+		os.Exit(1)
+	}
+	rs := service.NewReportService(mc)
+	s := server.GetNewServer(rs)
 	docs.RegisterDocumentServiceServer(grpcSrv, s)
 	srvMetrics.InitializeMetrics(grpcSrv)
 

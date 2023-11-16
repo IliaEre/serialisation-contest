@@ -13,12 +13,15 @@ type Server struct {
 	middle service.ReportService
 }
 
-func GetNewServer(middle service.ReportService) *Server {
-	return &Server{middle: middle}
+func GetNewServer(middle *service.ReportService) *Server {
+	return &Server{middle: *middle}
 }
 
 func (s *Server) GetAllByLimitAndOffset(ctx context.Context, req *pb.GetAllRequest) (*pb.GetAllResponse, error) {
-	docs := s.middle.Find(int(req.Limit), int(req.Offset))
+	docs, err := s.middle.Find(int(req.Limit), int(req.Offset))
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
 
 	if len(docs) != 0 {
 		typedDocs := make([]*pb.Document, len(docs))

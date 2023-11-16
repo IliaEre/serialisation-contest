@@ -10,15 +10,15 @@ import (
 	"log"
 )
 
-const collectionName = "jsonReports"
 const db = "loadtest"
 
 type ReportMongoRepository struct {
-	Client mongo.Client
+	CollectionName string
+	Client         mongo.Client
 	ReportClientRepository
 }
 
-func NewMongoRepository(address string) (*ReportMongoRepository, error) {
+func NewMongoRepository(address, collectionName string) (*ReportMongoRepository, error) {
 	clientOptions := options.Client().ApplyURI(address)
 	clientOptions.SetAuth(options.Credential{ // not secure, I know, sorry :D
 		Username: "root",
@@ -34,11 +34,11 @@ func NewMongoRepository(address string) (*ReportMongoRepository, error) {
 		return nil, err
 	}
 
-	return &ReportMongoRepository{Client: *client}, nil
+	return &ReportMongoRepository{Client: *client, CollectionName: collectionName}, nil
 }
 
 func (rm *ReportMongoRepository) Find(limit int, offset int) ([]model.Document, error) {
-	collection := rm.Client.Database(db).Collection(collectionName)
+	collection := rm.Client.Database(db).Collection(rm.CollectionName)
 	findOptions := options.Find().SetLimit(int64(limit)).SetSkip(int64(offset))
 
 	cursor, err := collection.Find(context.Background(), bson.D{}, findOptions)
@@ -66,7 +66,7 @@ func (rm *ReportMongoRepository) Find(limit int, offset int) ([]model.Document, 
 }
 
 func (rm *ReportMongoRepository) Save(report model.Document) error {
-	collection := rm.Client.Database(db).Collection(collectionName)
+	collection := rm.Client.Database(db).Collection(rm.CollectionName)
 	insertResult, err := collection.InsertOne(context.Background(), report)
 	if err != nil {
 		return err

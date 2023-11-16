@@ -2,7 +2,7 @@ package service
 
 import (
 	"encoding/json"
-	"json-docs-service/internal/model"
+	m "github.com/IliaEre/serialisation-contest/common/model"
 	"log"
 	"testing"
 )
@@ -18,7 +18,7 @@ func BenchmarkCreateAndMarshal(b *testing.B) {
 			log.Fatal("parse error")
 		}
 
-		parsedDoc := new(model.Document)
+		parsedDoc := new(m.Document)
 		if json.Unmarshal(bt, parsedDoc) != nil {
 			log.Fatal("parse error")
 		}
@@ -26,38 +26,38 @@ func BenchmarkCreateAndMarshal(b *testing.B) {
 	}
 }
 
-func createDoc() *model.Document {
-	return &model.Document{
-		Docs: model.Docs{
+func createDoc() *m.Document {
+	return &m.Document{
+		Docs: m.Docs{
 			Name: "IT",
-			Department: model.Department{
+			Department: m.Department{
 				Code: "department_code",
 				Time: 303030,
-				Employee: model.Employee{
+				Employee: m.Employee{
 					Name:    "test",
 					Surname: "testovich",
 					Code:    "code_123",
 				},
 			},
-			Price: model.Price{
+			Price: m.Price{
 				CategoryA: "10.2",
 				CategoryB: "10.2",
 				CategoryC: "10.2",
 			},
-			Owner: model.Owner{
+			Owner: m.Owner{
 				UUID:   "sdfsr132rfds12edsffsdfg",
 				Secret: "strange code like uuid but not!",
 			},
-			Data: model.Data{
-				Transaction: model.Transaction{
+			Data: m.Data{
+				Transaction: m.Transaction{
 					Type:      "MOVE",
 					UUID:      "sdfsr132rfds12edsffsdfg",
 					PointCode: "1231031230",
 				},
 			},
-			Delivery: model.Delivery{
+			Delivery: m.Delivery{
 				Company: "NTF_N1",
-				Address: model.Address{
+				Address: m.Address{
 					Code:      "A1",
 					Country:   "UK",
 					Street:    "Main",
@@ -69,9 +69,9 @@ func createDoc() *model.Document {
 	}
 }
 
-func getGoods() []model.Goods {
-	goodsList := make([]model.Goods, 1)
-	goods := model.Goods{
+func getGoods() []m.Goods {
+	goodsList := make([]m.Goods, 1)
+	goods := m.Goods{
 		Name:   "I_nokla",
 		Amount: 1,
 		Code:   "1231fdsf1",
