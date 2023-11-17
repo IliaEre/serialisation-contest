@@ -97,7 +97,7 @@ func BenchmarkCreatePool(b *testing.B) {
 
 // BenchmarkCreateAndMarshalBuilderPool-10    	  344282	      3467 ns/op
 func BenchmarkCreateAndMarshalBuilderPool(b *testing.B) {
-	builderPool := builder.NewBuilderPool(100)
+	builderPool := builder.NewBuilderPool(10)
 
 	for i := 0; i < b.N; i++ {
 		currentBuilder := builderPool.Get()
