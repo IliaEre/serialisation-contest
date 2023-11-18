@@ -1,0 +1,1 @@
+cd .. && docker build . -t flat-docs-service

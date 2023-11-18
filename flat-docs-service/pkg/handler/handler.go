@@ -2,86 +2,74 @@ package handler
 
 import (
 	"flat-docs-service/flat/docs/sample"
-	"flat-docs-service/internal/service"
-	"flat-docs-service/pkg/mapper"
+	"flat-docs-service/internal/builder"
+	"flat-docs-service/pkg/service"
 	"github.com/gin-gonic/gin"
-	flatbuffers "github.com/google/flatbuffers/go"
 	"io"
 	"log"
 	"net/http"
 )
 
-const buffSize = 256
+const (
+	defaultBufferOffset = 0
+	capacity            = 100
+)
 
 type Handler struct {
-	s service.ReportServiceInterface
+	service service.ReportServiceInterface
+	bb      *builder.Pool
 }
 
 func NewHandler(service service.ReportServiceInterface) *Handler {
-	return &Handler{s: service}
+	return &Handler{service: service, bb: builder.NewBuilderPool(capacity)}
 }
 
-func (h Handler) Save(c *gin.Context) {
+func (h *Handler) Save(c *gin.Context) {
 	request := c.Request
-	buf := getBytes(request)
-	flatRequest := sample.GetRootAsSaveRequest(buf, 0)
+	requestBytes := getBytes(request)
+	flatRequest := sample.GetRootAsSaveRequest(requestBytes, defaultBufferOffset)
 	doc := new(sample.Document)
 	flatDoc := flatRequest.Document(doc)
 
-	err := h.s.Save(*flatDoc)
-
-	builder := flatbuffers.NewBuilder(buffSize)
-	var message flatbuffers.UOffsetT
+	message := "ok"
+	err := h.service.Save(flatDoc)
 	if err != nil {
-		message = builder.CreateString(err.Error())
-	} else {
-		message = builder.CreateString("ok")
+		log.Println("Error while saving doc:", err)
+		message = err.Error()
 	}
 
-	sample.SaveResponseStart(builder)
-	sample.SaveResponseAddMessage(builder, message)
+	b := h.bb.Get()
+	defer h.bb.Put(b)
 
-	response := sample.SaveResponseEnd(builder)
-	builder.Finish(response)
-	fb := builder.FinishedBytes()
+	responseString := b.CreateString(message)
+	sample.SaveResponseStart(b)
+	sample.SaveResponseAddMessage(b, responseString)
+	response := sample.SaveResponseEnd(b)
+	b.Finish(response)
+	fb := b.FinishedBytes()
 	c.Header("Content-Type", "application/octet-stream")
 	c.Data(200, "application/octet-stream", fb)
 }
 
-func (h Handler) FindByParams(c *gin.Context) {
+func (h *Handler) FindByParams(c *gin.Context) {
 	request := c.Request
 	buf := getBytes(request)
-	flatRequest := sample.GetRootAsFindRequest(buf, 0)
-	docs := h.s.Find(int(flatRequest.Limit()), int(flatRequest.Offset()))
-
-	builder := flatbuffers.NewBuilder(1024)
-	off := make([]flatbuffers.UOffsetT, len(docs))
-	for i := 0; i < len(docs); i++ {
-		fb := sample.GetRootAsDocument(docs[i].Table().Bytes, 0)
-		doc := mapper.CreateDocument(builder, fb)
-		off = append(off, doc)
-	}
-
-	sample.FindResponseStartDocsVector(builder, len(off))
-	for i := len(off) - 1; i >= 0; i-- {
-		builder.PrependUOffsetT(off[i])
-	}
-	docsVector := builder.EndVector(len(off))
+	flatRequest := sample.GetRootAsFindRequest(buf, defaultBufferOffset)
+	response, err := h.service.Find(int(flatRequest.Limit()), int(flatRequest.Offset()))
 
 	c.Header("Content-Type", "application/octet-stream")
-
-	sample.FindResponseStart(builder)
-	sample.FindResponseAddDocs(builder, docsVector)
-	response := sample.FindResponseEnd(builder)
-	builder.Finish(response)
-	fb := builder.FinishedBytes()
-	c.Data(200, "application/octet-stream", fb)
+	if err != nil {
+		log.Println("Error while finding docs:", err)
+		c.AbortWithError(500, err)
+		return
+	}
+	c.Data(200, "application/octet-stream", *response)
 }
 
 func getBytes(request *http.Request) []byte {
-	buf, err := io.ReadAll(request.Body)
-	if err != nil || len(buf) == 0 {
-		log.Fatal("request", err)
+	bytes, err := io.ReadAll(request.Body)
+	if err != nil || len(bytes) == 0 {
+		log.Fatal("Error while processioning request", err)
 	}
-	return buf
+	return bytes
 }

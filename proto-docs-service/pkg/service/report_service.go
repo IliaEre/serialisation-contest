@@ -20,7 +20,7 @@ func NewReportService(mongo *db.ReportMongoRepository) *ReportService {
 
 func (s *ReportService) Save(doc *docs.Document) error {
 	model := s.mapper.ProtoToModelDocument(doc)
-	return s.repository.Save(*model)
+	return s.repository.Save(model)
 }
 
 func (s *ReportService) Find(limit int, offset int) ([]*docs.Document, error) {
@@ -32,7 +32,7 @@ func (s *ReportService) Find(limit int, offset int) ([]*docs.Document, error) {
 
 	var parsedDocuments []*docs.Document
 	for _, v := range docList {
-		doc := s.mapper.ModelToProtoDocument(&v)
+		doc := s.mapper.ModelToProtoDocument(v)
 		parsedDocuments = append(parsedDocuments, doc)
 	}
 
