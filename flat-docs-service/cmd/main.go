@@ -2,11 +2,14 @@ package main
 
 import (
 	"context"
-	"flat-docs-service/internal/service"
+	"errors"
+	"flat-docs-service/pkg/db"
 	"flat-docs-service/pkg/handler"
+	"flat-docs-service/pkg/service"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	ginprometheus "github.com/zsais/go-gin-prometheus"
+	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -14,18 +17,27 @@ import (
 )
 
 const (
-	post = "/save"
-	get  = "/find"
-	TTL  = 5
-	addr = "0.0.0.0:50051"
+	post         = "/report"
+	get          = "/reports"
+	TTL          = 5
+	addr         = ":9093"
+	subsystem    = "gin"
+	mongoAddress = "mongodb://mongo:27017"
+	collection   = "flatReports"
 )
 
 func main() {
 	router := gin.Default()
-	p := ginprometheus.NewPrometheus("gin")
+	p := ginprometheus.NewPrometheus(subsystem)
 	p.Use(router)
-	sv := service.NewReportService()
-	gw := handler.NewHandler(*sv)
+
+	mc, err := db.NewMongoRepository(mongoAddress, collection)
+	if err != nil {
+		log.Println("err", err)
+		os.Exit(1)
+	}
+	sv := service.NewReportService(mc)
+	gw := handler.NewHandler(sv)
 
 	router.POST(post, gw.Save)
 	router.GET(get, gw.FindByParams)
@@ -37,8 +49,8 @@ func main() {
 
 	go func() {
 		// Service connections
-		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			panic(err)
+		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			log.Print(err)
 		}
 	}()
 
@@ -59,5 +71,4 @@ func main() {
 	}
 
 	fmt.Println("Server exiting")
-
 }

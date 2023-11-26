@@ -32,6 +32,14 @@ services:
     networks:
       - loadnetwork
 
+  flat-docs-service:
+    image: flat-docs-service:latest
+    container_name: flat-docs-service
+    ports:
+      - "9093:9093"
+    networks:
+      - loadnetwork
+
   prometheus:
     image: prom/prometheus:v2.47.2
     volumes:

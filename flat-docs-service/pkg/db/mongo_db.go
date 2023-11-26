@@ -2,12 +2,12 @@ package db
 
 import (
 	"context"
+	"flat-docs-service/pkg/model"
 	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
-	"proto-docs-service/pkg/model"
 )
 
 const db = "loadtest"
@@ -66,7 +66,7 @@ func (rm *ReportMongoRepository) Find(limit int, offset int) ([]*model.Document,
 	return docsList, nil
 }
 
-func (rm *ReportMongoRepository) Save(doc *model.Document) error {
+func (rm *ReportMongoRepository) Save(doc model.Document) error {
 	collection := rm.Client.Database(db).Collection(rm.CollectionName)
 	insertResult, err := collection.InsertOne(context.Background(), doc)
 	if err != nil {
