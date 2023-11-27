@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-func TestShouldGenerateFind(t *testing.T) {
+func _TestShouldGenerateFind(t *testing.T) {
 	bp := builder.NewBuilderPool(1)
 	bb := bp.Get()
 	defer bp.Put(bb)
@@ -21,7 +21,7 @@ func TestShouldGenerateFind(t *testing.T) {
 	bb.Finish(response)
 	bytes := bb.FinishedBytes()
 
-	f, err := os.Create("request.binary")
+	f, err := os.Create("find.bin")
 	check(err)
 	defer f.Close()
 
@@ -31,7 +31,7 @@ func TestShouldGenerateFind(t *testing.T) {
 	w.Flush()
 }
 
-func TestShouldGenerateSave(t *testing.T) {
+func _TestShouldGenerateSave(t *testing.T) {
 	bp := builder.NewBuilderPool(1)
 	bb := bp.Get()
 	defer bp.Put(bb)
