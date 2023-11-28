@@ -11,7 +11,7 @@ pools:
     result:
       type: phout
       destination: ./phout.log
-    rps: { duration: 30s, type: line,  from: 400, to: 1000 }
+    rps: { duration: 60s, type: const,  ops: 1000 }
     startup:
       type: once
       times: 10
