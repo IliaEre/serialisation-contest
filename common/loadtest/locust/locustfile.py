@@ -13,11 +13,11 @@ class ReportCase(HttpUser):
         with open('save.bin', 'rb') as f:
             self.client.post('/report', data=f.read())
 
-    @task(2)
-    @tag('find_report')
-    def find(self):
-        with open('find.bin', 'rb') as f:
-            self.client.post('/reports', data=f.read())
+    # @task(2)
+    # @tag('find_report')
+    # def find(self):
+    #     with open('find.bin', 'rb') as f:
+    #         self.client.post('/reports', data=f.read())
 
     def on_start(self):
         self.client.wait_time = between(0, 0)
