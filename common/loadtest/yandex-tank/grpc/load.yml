@@ -4,14 +4,14 @@ pools:
       type: gprc_gun   # custom gun name (specified at `register.Gun("my_custom_gun_name", ...`)
       target: "localhost:84"
     ammo:
-      type: custom_provider
+      type: grpc_provider
       source:
         type: file
         path: json.ammo
     result:
       type: phout
       destination: ./phout.log
-    rps: { duration: 60s, type: line,  from: 400, to: 1000 }
+    rps: { duration: 10s, type: line,  from: 400, to: 1000 }
     startup:
       type: once
       times: 10

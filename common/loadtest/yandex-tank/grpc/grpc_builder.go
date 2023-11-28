@@ -2,7 +2,7 @@ package main
 
 import (
 	uuid "github.com/satori/go.uuid"
-	pb "grpc-load-test/docs"
+	pb "grpc-gun/docs"
 )
 
 func createDoc(name string) *pb.Document {

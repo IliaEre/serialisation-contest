@@ -8,10 +8,9 @@ import (
 	"time"
 
 	_ "github.com/golang/protobuf/ptypes/timestamp"
-	_ "github.com/satori/go.uuid"
 	"github.com/spf13/afero"
 	"google.golang.org/grpc"
-	pb "grpc-load-test/docs"
+	pb "grpc-gun/docs"
 
 	"github.com/yandex/pandora/cli"
 	"github.com/yandex/pandora/components/phttp/import"
@@ -147,11 +146,11 @@ func main() {
 	phttp.Import(fs)
 
 	// Custom imports. Integrate your custom types into configuration system.
-	coreimport.RegisterCustomJSONProvider("custom_provider", func() core.Ammo { return &Ammo{} })
+	coreimport.RegisterCustomJSONProvider("grpc_provider", func() core.Ammo { return &Ammo{} })
 
 	register.Gun("gprc_gun", NewGun, func() GunConfig {
 		return GunConfig{
-			Target: "grpc target",
+			Target: "grpc_target",
 		}
 	})
 

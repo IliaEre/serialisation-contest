@@ -22,7 +22,7 @@ const (
 	TTL          = 5
 	addr         = ":9093"
 	subsystem    = "gin"
-	mongoAddress = "mongodb://localhost:27017"
+	mongoAddress = "mongodb://mongo:27017"
 	collection   = "flatReports"
 )
 

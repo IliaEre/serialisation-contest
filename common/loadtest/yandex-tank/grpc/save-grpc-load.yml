@@ -3,9 +3,8 @@ phantom:
 pandora:
   enabled: true
   package: yandextank.plugins.Pandora
-#  pandora_cmd: /usr/bin/pandora # Pandora executable path
-  pandora_cmd: grpc/cmd/main # Pandora executable path
-  config_file: grpc/config/load.yml # Pandora config path
+  pandora_cmd: ./grpc-gun # Pandora executable path
+  config_file: ./load.yml # Pandora config path
 overload:
   enabled: true
   package: yandextank.plugins.DataUploader

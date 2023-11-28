@@ -1,2 +1,5 @@
 /common/loadtest/yandex-tank/logs
 /common/loadtest/yandex-tank/env
+/common/loadtest/yandex-tank/grpc/env
+/common/loadtest/yandex-tank/json/env
+/common/loadtest/yandex-tank/flat/env

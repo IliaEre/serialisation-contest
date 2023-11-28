@@ -1,5 +1,5 @@
 phantom:
-  address: localhost
+  address: "localhost"
   port: "9091"
   ammo_type: phantom
   ammofile: json/json-ammo.txt
