@@ -19,6 +19,14 @@ table FindResponse {
     docs: [Document];
 }
 
+table ValidateRequest {
+   document: Document;
+}
+
+table ValidateResponse {
+    message: string;
+}
+
 table Department {
   code: string;
   time: long;

@@ -1,0 +1,31 @@
+pools:
+  - id: HTTP pool
+    gun:
+      type: flat_gun   # custom gun name (specified at `register.Gun("my_custom_gun_name", ...`)
+      target: "http://localhost:9093"
+    ammo:
+      type: flat_provider
+      source:
+        type: file
+        path: json-validate.ammo
+    result:
+      type: phout
+      destination: ./phout.log
+    rps: { duration: 60s, type: const,  ops: 1000 }
+    startup:
+      type: once
+      times: 10
+
+log:                                 # gun logging configuration
+  level: error                       # log only `error` messages (`debug` for verbose logging)
+
+monitoring:
+  expvar:                            # gun statistics HTTP server
+    enabled: false
+    port: 1234
+  cpuprofile:                        # cpu profiling
+    enabled: false
+    file: "cpuprofile.log"
+  memprofile:                        # mem profiling
+    enabled: false
+    file: "memprofile.log"

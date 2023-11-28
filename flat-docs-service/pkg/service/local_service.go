@@ -1,11 +1,13 @@
 package service
 
 import (
+	"errors"
 	"flat-docs-service/flat/docs/sample"
 	"flat-docs-service/internal/builder"
 	"flat-docs-service/internal/mapper"
 	"flat-docs-service/pkg/db"
 	flatbuffers "github.com/google/flatbuffers/go"
+	"log"
 )
 
 const capacity = 100
@@ -58,4 +60,13 @@ func (sv *ReportService) Find(limit int, offset int) (*[]byte, error) {
 	b.Finish(response)
 	fb := b.FinishedBytes()
 	return &fb, nil
+}
+
+func (sv *ReportService) Validate(doc *sample.Document) error {
+	code := string(doc.Department(new(sample.Department)).Code())
+	log.Println("Department code:", code)
+	if len(code) > 100 {
+		return errors.New("ups, department code so big")
+	}
+	return nil
 }

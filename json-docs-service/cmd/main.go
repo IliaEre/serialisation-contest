@@ -18,6 +18,7 @@ import (
 
 const (
 	post         = "/report"
+	validate     = "/report/validate"
 	get          = "/reports"
 	TTL          = 5
 	address      = ":9091"
@@ -47,6 +48,7 @@ func main() {
 	gw := middle.NewHttpGateway(sv)
 
 	router.POST(post, gw.Save)
+	router.POST(validate, gw.Validate)
 	router.GET(get, gw.Find)
 
 	srv := &http.Server{

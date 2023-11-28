@@ -60,6 +60,24 @@ func (h HttpGateway) Save(c *gin.Context) {
 	c.IndentedJSON(http.StatusCreated, gin.H{"status": "ok"})
 }
 
+func (h HttpGateway) Validate(c *gin.Context) {
+	var document model.Document
+	if err := c.BindJSON(&document); err != nil {
+		fmt.Println("Error while parsing the doc", err)
+		sendError(c)
+		return
+	}
+
+	err := h.reportService.Validate(document)
+	if err != nil {
+		fmt.Println("Error while validating the doc", err)
+		sendError(c)
+		return
+	}
+
+	c.IndentedJSON(http.StatusCreated, gin.H{"status": "ok"})
+}
+
 func sendError(c *gin.Context) {
 	c.IndentedJSON(http.StatusInternalServerError, gin.H{"status": "error"})
 }

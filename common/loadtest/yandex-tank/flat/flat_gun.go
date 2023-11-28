@@ -62,7 +62,13 @@ func (g *Gun) Bind(aggr core.Aggregator, deps core.GunDeps) error {
 		panic(err)
 	}
 
-	g.files = append(g.files, saveFile, findFile)
+	validateFile, err := os.ReadFile("validate.bin")
+	if err != nil {
+		log.Printf("FATAL: %s", err)
+		panic(err)
+	}
+
+	g.files = append(g.files, saveFile, findFile, validateFile)
 	return nil
 }
 
@@ -94,6 +100,18 @@ func (g *Gun) caseFindAll(client *http.Client) int {
 	return response.StatusCode
 }
 
+func (g *Gun) caseValidate(client *http.Client) int {
+	host := g.conf.Target
+
+	response, err := client.Post(host+"/report/validate", "application/octet-stream", bytes.NewBuffer(g.files[2]))
+	if err != nil {
+		log.Printf("FATAL: %s", err)
+		return 500
+	}
+
+	return response.StatusCode
+}
+
 func (g *Gun) shoot(ammo *Ammo) {
 	code := 0
 	sample := netsample.Acquire(ammo.Tag)
@@ -105,6 +123,8 @@ func (g *Gun) shoot(ammo *Ammo) {
 		code = g.caseSave(client)
 	case "/FindCase":
 		code = g.caseFindAll(client)
+	case "/ValidateCase":
+		code = g.caseValidate(client)
 	default:
 		code = 404
 	}

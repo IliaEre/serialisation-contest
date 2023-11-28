@@ -13,7 +13,7 @@ const (
 )
 
 func BenchmarkCreateAndCheckOneField(b *testing.B) {
-	bb := builder.NewBuilderPool(poolCapacity)
+	bb := builder.NewBuilderPool(10)
 
 	for i := 0; i < b.N; i++ {
 		newBuilder := bb.Get()

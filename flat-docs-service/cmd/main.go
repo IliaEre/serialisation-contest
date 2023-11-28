@@ -18,6 +18,7 @@ import (
 
 const (
 	post         = "/report"
+	validate     = "/report/validate"
 	get          = "/reports"
 	TTL          = 5
 	addr         = ":9093"
@@ -41,6 +42,7 @@ func main() {
 
 	router.POST(post, gw.Save)
 	router.POST(get, gw.FindByParams)
+	router.POST(validate, gw.ValidateDepartment)
 
 	srv := &http.Server{
 		Addr:    addr,
