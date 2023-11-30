@@ -1,18 +1,18 @@
 phantom:
-  address: localhost
-  port: "9093"
+  address: "localhost"
+  port: "9091"
   ammo_type: phantom
-  ammofile: flat/flat-save-ammo.txt
+  ammofile: json-ammo.txt
   load_profile:
     load_type: rps
-    schedule: line(1, 5, 1s)
+    schedule: const(1000, 1m)
   writelog: all
   ssl: false
   connection_test: true
 overload:
   enabled: true
   package: yandextank.plugins.DataUploader
-  job_name: "save flat docs"
+  job_name: "validate docs"
   token_file: "env/token.txt"
 telegraf:
   enabled: false

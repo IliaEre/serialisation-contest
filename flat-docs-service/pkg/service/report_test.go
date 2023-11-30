@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-func TestShouldGenerateFind(t *testing.T) {
+func _TestShouldGenerateFind(t *testing.T) {
 	bp := builder.NewBuilderPool(1)
 	bb := bp.Get()
 	defer bp.Put(bb)
@@ -21,7 +21,7 @@ func TestShouldGenerateFind(t *testing.T) {
 	bb.Finish(response)
 	bytes := bb.FinishedBytes()
 
-	f, err := os.Create("request.binary")
+	f, err := os.Create("find.bin")
 	check(err)
 	defer f.Close()
 
@@ -31,7 +31,7 @@ func TestShouldGenerateFind(t *testing.T) {
 	w.Flush()
 }
 
-func TestShouldGenerateSave(t *testing.T) {
+func _TestShouldGenerateSave(t *testing.T) {
 	bp := builder.NewBuilderPool(1)
 	bb := bp.Get()
 	defer bp.Put(bb)
@@ -66,6 +66,45 @@ func TestShouldGenerateSave(t *testing.T) {
 	rb := bb.FinishedBytes()
 
 	err := os.WriteFile("save.bin", rb, 0644)
+	check(err)
+	fmt.Println("Structure written into file successfully")
+}
+
+func _TestShouldGenerateValidate(t *testing.T) {
+	bp := builder.NewBuilderPool(1)
+	bb := bp.Get()
+	defer bp.Put(bb)
+
+	// build internal objects
+	department := buildDepartment(bb)
+	prices := buildPrices(bb)
+	owner := buildOwner(bb)
+	data := buildData(bb)
+	delivery := buildDelivery(bb)
+	goods := buildGoodsVector(bb)
+
+	// fill doc's name:
+	documentCode := bb.CreateString("IT")
+	// build doc
+	sample.DocumentStart(bb)
+	sample.DocumentAddName(bb, documentCode)
+	sample.DocumentAddDepartment(bb, department)
+	sample.DocumentAddPrice(bb, prices)
+	sample.DocumentAddOwner(bb, owner)
+	sample.DocumentAddData(bb, data)
+	sample.DocumentAddDelivery(bb, delivery)
+	sample.DocumentAddGoods(bb, goods)
+
+	docs := sample.DocumentEnd(bb)
+
+	sample.ValidateRequestStart(bb)
+	sample.ValidateResponseAddMessage(bb, docs)
+	se := sample.ValidateResponseEnd(bb)
+	bb.Finish(se)
+
+	rb := bb.FinishedBytes()
+
+	err := os.WriteFile("validate.bin", rb, 0644)
 	check(err)
 	fmt.Println("Structure written into file successfully")
 }

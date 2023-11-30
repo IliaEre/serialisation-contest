@@ -6,5 +6,6 @@ import (
 
 type ReportServiceInterface interface {
 	Save(document *sample.Document) error
+	Validate(document *sample.Document) error
 	Find(int, int) (*[]byte, error)
 }

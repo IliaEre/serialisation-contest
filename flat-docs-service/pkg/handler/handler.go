@@ -66,6 +66,33 @@ func (h *Handler) FindByParams(c *gin.Context) {
 	c.Data(200, "application/octet-stream", *response)
 }
 
+func (h *Handler) ValidateDepartment(c *gin.Context) {
+	request := c.Request
+	requestBytes := getBytes(request)
+	flatRequest := sample.GetRootAsValidateRequest(requestBytes, defaultBufferOffset)
+	doc := new(sample.Document)
+	flatDoc := flatRequest.Document(doc)
+
+	message := "ok"
+	err := h.service.Validate(flatDoc)
+	if err != nil {
+		log.Println("Error while saving doc:", err)
+		message = err.Error()
+	}
+
+	b := h.bb.Get()
+	defer h.bb.Put(b)
+
+	responseString := b.CreateString(message)
+	sample.ValidateRequestStart(b)
+	sample.ValidateResponseAddMessage(b, responseString)
+	response := sample.ValidateResponseEnd(b)
+	b.Finish(response)
+	fb := b.FinishedBytes()
+	c.Header("Content-Type", "application/octet-stream")
+	c.Data(200, "application/octet-stream", fb)
+}
+
 func getBytes(request *http.Request) []byte {
 	bytes, err := io.ReadAll(request.Body)
 	if err != nil || len(bytes) == 0 {

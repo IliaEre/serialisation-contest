@@ -6,5 +6,6 @@ import (
 
 type ReportServiceInterface interface {
 	Save(model.Document) error
+	Validate(model.Document) error
 	Find(int, int) ([]model.Document, error)
 }
