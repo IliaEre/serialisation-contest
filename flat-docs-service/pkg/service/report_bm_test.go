@@ -47,9 +47,9 @@ func BenchmarkCreatePool(b *testing.B) {
 	}
 }
 
-// BenchmarkCreateAndMarshalBuilderPool-10    	  344282	      3467 ns/op
+// BenchmarkCreateAndMarshalBuilderPool-10    	 1681384	       711.2 ns/op
 func BenchmarkCreateAndMarshalBuilderPool(b *testing.B) {
-	builderPool := builder.NewBuilderPool(10)
+	builderPool := builder.NewBuilderPool(100)
 
 	for i := 0; i < b.N; i++ {
 		currentBuilder := builderPool.Get()
@@ -68,6 +68,7 @@ func BenchmarkCreateAndMarshalBuilderPool(b *testing.B) {
 
 func BuildDocs(builder *flatbuffers.Builder) []byte {
 	// build internal objects
+	name := builder.CreateString("IT")
 	department := buildDepartment(builder)
 	prices := buildPrices(builder)
 	owner := buildOwner(builder)
@@ -85,7 +86,7 @@ func BuildDocs(builder *flatbuffers.Builder) []byte {
 
 	// build doc
 	sample.DocumentStart(builder)
-	sample.DocumentAddName(builder, builder.CreateString("IT"))
+	sample.DocumentAddName(builder, name)
 	sample.DocumentAddDepartment(builder, department)
 	sample.DocumentAddPrice(builder, prices)
 	sample.DocumentAddOwner(builder, owner)
