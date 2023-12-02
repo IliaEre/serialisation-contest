@@ -6,8 +6,8 @@ import (
 	"github.com/gin-gonic/gin"
 	ginprometheus "github.com/zsais/go-gin-prometheus"
 	"go.mongodb.org/mongo-driver/mongo"
+	"json-docs-service/internal/handle"
 	"json-docs-service/pkg/db"
-	"json-docs-service/pkg/middle"
 	"json-docs-service/pkg/service"
 	"log"
 	"net/http"
@@ -45,7 +45,7 @@ func main() {
 	}(&rc.Client, context.Background())
 
 	sv := service.NewReportService(rc)
-	gw := middle.NewHttpGateway(sv)
+	gw := handle.NewHttpGateway(sv)
 
 	router.POST(post, gw.Save)
 	router.POST(validate, gw.Validate)

@@ -2,7 +2,7 @@ package mapper
 
 import (
 	pb "proto-docs-service/grpc/docs"
-	"proto-docs-service/pkg/model"
+	"proto-docs-service/internal/model"
 )
 
 type ProtoMapper struct {
