@@ -144,7 +144,7 @@ func main() {
 	coreimport.RegisterCustomJSONProvider("flat_provider", func() core.Ammo { return &Ammo{} })
 	register.Gun("flat_gun", NewGun, func() GunConfig {
 		return GunConfig{
-			Target: "flat_target",
+			Target: "localhost:9093",
 		}
 	})
 

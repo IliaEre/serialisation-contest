@@ -1,0 +1,20 @@
+phantom:
+  enabled: false
+pandora:
+  enabled: true
+  package: yandextank.plugins.Pandora
+  pandora_cmd: ./grpc-gun # Pandora executable path
+  config_file: ./validate-load.yml # Pandora config path
+overload:
+  enabled: true
+  package: yandextank.plugins.DataUploader
+  job_name: "grpc validate report"
+  token_file: "env/token.txt"
+telegraf:
+  enabled: false
+autostop:
+  autostop:
+    - time(1s,10s) # if request average > 1s
+    - http(5xx,100%,1s) # if 500 errors > 1s
+    - http(4xx,25%,10s) # if 400 > 25%
+    - net(xx,25,10) # if amount of non-zero net-codes in every second of last 10s period is more than 25

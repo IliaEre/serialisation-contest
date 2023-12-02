@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"log"
-	"runtime/debug"
 	"strconv"
 	"time"
 
@@ -116,6 +115,25 @@ func (g *Gun) caseFindAll(client pb.DocumentServiceClient, ammo *Ammo) int {
 	return code
 }
 
+func (g *Gun) caseValidate(client pb.DocumentServiceClient, ammo *Ammo) int {
+	code := 0
+	docName := ammo.Param1
+
+	out, err := client.Validate(
+		context.TODO(), &pb.ValidateRequest{Document: createDoc(docName)},
+	)
+
+	if err != nil {
+		log.Printf("FATAL: %s", err)
+		code = 500
+	}
+
+	if out != nil {
+		code = 200
+	}
+	return code
+}
+
 func (g *Gun) shoot(ammo *Ammo) {
 	code := 0
 	sample := netsample.Acquire(ammo.Tag)
@@ -127,6 +145,8 @@ func (g *Gun) shoot(ammo *Ammo) {
 		code = g.caseSave(client, ammo)
 	case "/FindCase":
 		code = g.caseFindAll(client, ammo)
+	case "/ValidateCase":
+		code = g.caseValidate(client, ammo)
 	default:
 		code = 404
 	}
@@ -138,19 +158,18 @@ func (g *Gun) shoot(ammo *Ammo) {
 }
 
 func main() {
-	debug.SetGCPercent(-1)
 	// Standard imports.
 	fs := afero.NewOsFs()
 	coreimport.Import(fs)
-	// May not be imported, if you don't need http guns and etc.
+	// May not be imported, if you don't need http guns, etc.
 	phttp.Import(fs)
 
 	// Custom imports. Integrate your custom types into configuration system.
 	coreimport.RegisterCustomJSONProvider("grpc_provider", func() core.Ammo { return &Ammo{} })
 
-	register.Gun("gprc_gun", NewGun, func() GunConfig {
+	register.Gun("grpc_gun", NewGun, func() GunConfig {
 		return GunConfig{
-			Target: "grpc_target",
+			Target: "localhost:84",
 		}
 	})
 
