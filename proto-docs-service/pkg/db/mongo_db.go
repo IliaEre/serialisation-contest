@@ -7,7 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
-	"proto-docs-service/pkg/model"
+	"proto-docs-service/internal/model"
 )
 
 const db = "loadtest"

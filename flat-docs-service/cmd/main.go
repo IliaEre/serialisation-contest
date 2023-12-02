@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 	"errors"
+	"flat-docs-service/internal/handler"
 	"flat-docs-service/pkg/db"
-	"flat-docs-service/pkg/handler"
 	"flat-docs-service/pkg/service"
 	"fmt"
 	"github.com/gin-gonic/gin"

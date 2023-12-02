@@ -5,6 +5,7 @@ option go_package = "/docs";
 service DocumentService {
     rpc GetAllByLimitAndOffset(GetAllRequest) returns (GetAllResponse) {}
     rpc Save(SaveRequest) returns (SaveResponse) {}
+    rpc Validate(ValidateRequest) returns (ValidateResponse) {}
 }
 
 message GetAllRequest {
@@ -22,6 +23,14 @@ message SaveRequest {
 
 message SaveResponse {
     string message = 1;
+}
+
+message ValidateRequest {
+  Document document = 1;
+}
+
+message ValidateResponse {
+  string message = 1;
 }
 
 message Document {

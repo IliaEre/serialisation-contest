@@ -1,7 +1,7 @@
 pools:
   - id: HTTP pool
     gun:
-      type: gprc_gun   # custom gun name (specified at `register.Gun("my_custom_gun_name", ...`)
+      type: grpc_gun   # custom gun name (specified at `register.Gun("my_custom_gun_name", ...`)
       target: "localhost:84"
     ammo:
       type: grpc_provider

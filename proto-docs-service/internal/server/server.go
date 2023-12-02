@@ -43,3 +43,11 @@ func (s *Server) Save(ctx context.Context, req *pb.SaveRequest) (*pb.SaveRespons
 	}
 	return &pb.SaveResponse{Message: "ok"}, nil
 }
+
+func (s *Server) Validate(ctx context.Context, req *pb.ValidateRequest) (*pb.ValidateResponse, error) {
+	err := s.middle.Validate(req.GetDocument())
+	if err != nil {
+		return nil, status.Error(codes.Internal, "ups, problem")
+	}
+	return &pb.ValidateResponse{Message: "ok"}, nil
+}

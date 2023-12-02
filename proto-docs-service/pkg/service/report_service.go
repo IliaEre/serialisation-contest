@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"log"
 	"proto-docs-service/grpc/docs"
 	"proto-docs-service/internal/mapper"
@@ -37,4 +38,14 @@ func (s *ReportService) Find(limit int, offset int) ([]*docs.Document, error) {
 	}
 
 	return parsedDocuments, nil
+}
+
+func (s *ReportService) Validate(docs *docs.Document) error {
+	code := docs.Department.Code
+	log.Println("Department code:", code)
+	if len(code) > 100 {
+		return errors.New("ups, department code so big")
+	} else {
+		return nil
+	}
 }

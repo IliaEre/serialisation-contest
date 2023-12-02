@@ -1,6 +1,8 @@
 package db
 
-import "proto-docs-service/pkg/model"
+import (
+	"proto-docs-service/internal/model"
+)
 
 type ReportClientRepository interface {
 	Save(*model.Document) error
